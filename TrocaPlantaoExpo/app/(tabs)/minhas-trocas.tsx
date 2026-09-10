@@ -13,9 +13,9 @@ type StatusTroca = 'aberta' | 'negociacao' | 'confirmada' | 'cancelada';
 
 type MinhaTroca = {
   id: string;
-  hospital: string;
-  especialidade: string;
-  dataPlantao: string;
+  equipe: string;
+  nivel: string;
+  dataTurno: string;
   turno: string;
   dataDesejada: string;
   status: StatusTroca;
@@ -25,32 +25,32 @@ type MinhaTroca = {
 const MINHAS_TROCAS: MinhaTroca[] = [
   {
     id: '1',
-    hospital: 'Hospital das Clínicas',
-    especialidade: 'Cardiologia',
-    dataPlantao: '10/09/2026',
+    equipe: 'Suporte TI',
+    nivel: 'N2',
+    dataTurno: '10/09/2026',
     turno: '07:00 – 19:00',
     dataDesejada: '14/09/2026',
     status: 'negociacao',
-    interessado: 'Dra. Mariana Alves',
+    interessado: 'Mariana Alves',
   },
   {
     id: '2',
-    hospital: 'UPA Central',
-    especialidade: 'Clínica Médica',
-    dataPlantao: '22/09/2026',
+    equipe: 'Atendimento ao Cliente',
+    nivel: 'N1',
+    dataTurno: '22/09/2026',
     turno: '19:00 – 07:00',
     dataDesejada: '25/09/2026',
     status: 'aberta',
   },
   {
     id: '3',
-    hospital: 'Hospital Municipal',
-    especialidade: 'Clínica Médica',
-    dataPlantao: '05/08/2026',
+    equipe: 'Infraestrutura',
+    nivel: 'N3',
+    dataTurno: '05/08/2026',
     turno: '07:00 – 19:00',
     dataDesejada: '08/08/2026',
     status: 'confirmada',
-    interessado: 'Dr. Paulo Saraiva',
+    interessado: 'Paulo Saraiva',
   },
 ];
 
@@ -68,7 +68,7 @@ function MinhaTrocaCard({ troca }: { troca: MinhaTroca }) {
     if (troca.status === 'negociacao') {
       Alert.alert(
         'Negociação com ' + troca.interessado,
-        'Deseja confirmar a troca com este médico?',
+        'Deseja confirmar a troca com este atendente?',
         [
           { text: 'Cancelar', style: 'cancel' },
           { text: 'Confirmar Troca', onPress: () => Alert.alert('Troca confirmada!') },
@@ -86,8 +86,8 @@ function MinhaTrocaCard({ troca }: { troca: MinhaTroca }) {
     <View style={styles.card}>
       <View style={styles.cardTop}>
         <View style={styles.cardInfo}>
-          <Text style={styles.hospitalText}>{troca.hospital}</Text>
-          <Text style={styles.especialidadeText}>{troca.especialidade}</Text>
+          <Text style={styles.hospitalText}>{troca.equipe}</Text>
+          <Text style={styles.especialidadeText}>{troca.nivel}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: config.bg }]}>
           <Text style={[styles.statusText, { color: config.color }]}>{config.label}</Text>
@@ -96,8 +96,8 @@ function MinhaTrocaCard({ troca }: { troca: MinhaTroca }) {
 
       <View style={styles.datesRow}>
         <View style={styles.dateBlock}>
-          <Text style={styles.dateLabel}>Meu Plantão</Text>
-          <Text style={styles.dateValue}>{troca.dataPlantao}</Text>
+          <Text style={styles.dateLabel}>Meu Turno</Text>
+          <Text style={styles.dateValue}>{troca.dataTurno}</Text>
           <Text style={styles.turnoText}>{troca.turno}</Text>
         </View>
         <Text style={styles.arrow}>⇄</Text>
@@ -142,8 +142,8 @@ export default function MinhasTrocasScreen() {
             <Text style={styles.avatarText}>M</Text>
           </View>
           <View>
-            <Text style={styles.profileName}>Dr. Médico Teste</Text>
-            <Text style={styles.profileCrm}>CRM-SP 99999 · Cardiologia</Text>
+            <Text style={styles.profileName}>Atendente Teste</Text>
+            <Text style={styles.profileCrm}>MAT-99999 · N1</Text>
           </View>
         </View>
         <TouchableOpacity

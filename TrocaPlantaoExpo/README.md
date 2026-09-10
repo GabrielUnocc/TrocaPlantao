@@ -1,13 +1,13 @@
 # Troca Plantão
 
-Aplicativo mobile para médicos solicitarem e gerenciarem trocas de plantão de forma prática.
+Aplicativo mobile para atendentes de suporte (N1, N2, N3) e líderes/gestores solicitarem e gerenciarem trocas de turno de forma prática.
 
 ## Funcionalidades
 
 - Cadastro e login de usuários
-- Publicação de solicitações de troca de plantão
-- Seleção de hospital, data, turno e especialidade
-- Visualização das próprias solicitações de troca
+- Publicação de solicitações de troca de turno
+- Seleção de equipe, data, turno e nível (N1, N2, N3 ou Líder)
+- Visualização e gerenciamento das próprias solicitações
 
 ## Tecnologias
 
@@ -47,8 +47,8 @@ app/
   login.tsx           # Tela de login
   register.tsx        # Tela de cadastro
   (tabs)/
-    index.tsx         # Feed de solicitações
-    criar.tsx         # Nova solicitação de troca
+    index.tsx         # Feed de solicitações disponíveis
+    criar.tsx         # Nova solicitação de troca de turno
     minhas-trocas.tsx # Minhas solicitações
 components/
   atoms/              # Componentes básicos (inputs, botões)

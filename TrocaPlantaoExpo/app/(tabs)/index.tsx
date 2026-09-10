@@ -11,11 +11,11 @@ import {
 
 type Troca = {
   id: string;
-  medico: string;
-  crm: string;
-  especialidade: string;
-  hospital: string;
-  dataPlantao: string;
+  atendente: string;
+  matricula: string;
+  nivel: string;
+  equipe: string;
+  dataTurno: string;
   turno: string;
   dataDesejada: string;
 };
@@ -23,51 +23,51 @@ type Troca = {
 const TROCAS: Troca[] = [
   {
     id: '1',
-    medico: 'Dr. Rafael Lima',
-    crm: 'CRM-SP 12345',
-    especialidade: 'Cardiologia',
-    hospital: 'Hospital das Clínicas',
-    dataPlantao: '15/09/2026',
+    atendente: 'Rafael Lima',
+    matricula: 'MAT-12345',
+    nivel: 'N2',
+    equipe: 'Suporte TI',
+    dataTurno: '15/09/2026',
     turno: '07:00 – 19:00',
     dataDesejada: '18/09/2026',
   },
   {
     id: '2',
-    medico: 'Dra. Ana Costa',
-    crm: 'CRM-SP 67890',
-    especialidade: 'Pediatria',
-    hospital: 'Hospital Albert Einstein',
-    dataPlantao: '20/09/2026',
+    atendente: 'Ana Costa',
+    matricula: 'MAT-67890',
+    nivel: 'N1',
+    equipe: 'Atendimento ao Cliente',
+    dataTurno: '20/09/2026',
     turno: '19:00 – 07:00',
     dataDesejada: '22/09/2026',
   },
   {
     id: '3',
-    medico: 'Dr. Carlos Mendes',
-    crm: 'CRM-RJ 11111',
-    especialidade: 'Ortopedia',
-    hospital: 'Hospital Sírio-Libanês',
-    dataPlantao: '17/09/2026',
+    atendente: 'Carlos Mendes',
+    matricula: 'MAT-11111',
+    nivel: 'N3',
+    equipe: 'Infraestrutura',
+    dataTurno: '17/09/2026',
     turno: '07:00 – 19:00',
     dataDesejada: '19/09/2026',
   },
   {
     id: '4',
-    medico: 'Dra. Juliana Torres',
-    crm: 'CRM-SP 22222',
-    especialidade: 'Neurologia',
-    hospital: 'Hospital Santa Catarina',
-    dataPlantao: '25/09/2026',
+    atendente: 'Juliana Torres',
+    matricula: 'MAT-22222',
+    nivel: 'N2',
+    equipe: 'Suporte TI',
+    dataTurno: '25/09/2026',
     turno: '19:00 – 07:00',
     dataDesejada: '27/09/2026',
   },
   {
     id: '5',
-    medico: 'Dr. Fernando Souza',
-    crm: 'CRM-MG 33333',
-    especialidade: 'Clínica Médica',
-    hospital: 'Hospital Municipal',
-    dataPlantao: '28/09/2026',
+    atendente: 'Fernando Souza',
+    matricula: 'MAT-33333',
+    nivel: 'N1',
+    equipe: 'Atendimento ao Cliente',
+    dataTurno: '28/09/2026',
     turno: '07:00 – 19:00',
     dataDesejada: '30/09/2026',
   },
@@ -78,26 +78,26 @@ function TrocaCard({ troca, onSolicitar }: { troca: Troca; onSolicitar: (id: str
     <View style={styles.card}>
       <View style={styles.cardHeader}>
         <View style={styles.avatarCircle}>
-          <Text style={styles.avatarText}>{troca.medico.charAt(troca.medico.indexOf(' ') + 1)}</Text>
+          <Text style={styles.avatarText}>{troca.atendente.charAt(0)}</Text>
         </View>
         <View style={styles.cardHeaderInfo}>
-          <Text style={styles.medicoName}>{troca.medico}</Text>
-          <Text style={styles.crmText}>{troca.crm}</Text>
+          <Text style={styles.medicoName}>{troca.atendente}</Text>
+          <Text style={styles.crmText}>{troca.matricula}</Text>
         </View>
         <View style={styles.especialidadeBadge}>
-          <Text style={styles.especialidadeText}>{troca.especialidade}</Text>
+          <Text style={styles.especialidadeText}>{troca.nivel}</Text>
         </View>
       </View>
 
       <View style={styles.hospitalRow}>
-        <Text style={styles.hospitalIcon}>🏥</Text>
-        <Text style={styles.hospitalText}>{troca.hospital}</Text>
+        <Text style={styles.hospitalIcon}>💼</Text>
+        <Text style={styles.hospitalText}>{troca.equipe}</Text>
       </View>
 
       <View style={styles.datesRow}>
         <View style={styles.dateBlock}>
           <Text style={styles.dateLabel}>Oferece</Text>
-          <Text style={styles.dateValue}>{troca.dataPlantao}</Text>
+          <Text style={styles.dateValue}>{troca.dataTurno}</Text>
           <Text style={styles.turnoText}>{troca.turno}</Text>
         </View>
         <View style={styles.arrowBlock}>
@@ -126,7 +126,7 @@ export default function TrocasScreen() {
     const troca = trocas.find((t) => t.id === id);
     Alert.alert(
       'Solicitação Enviada',
-      `Sua solicitação de troca com ${troca?.medico} foi enviada. Aguarde a confirmação.`,
+      `Sua solicitação de troca com ${troca?.atendente} foi enviada. Aguarde a confirmação.`,
       [{ text: 'OK' }]
     );
   }

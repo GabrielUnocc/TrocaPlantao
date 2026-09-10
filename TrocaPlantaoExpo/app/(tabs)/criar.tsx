@@ -11,29 +11,20 @@ import {
 import { InputField } from '@/components/atoms/InputField';
 import { PrimaryButton } from '@/components/atoms/PrimaryButton';
 
-const ESPECIALIDADES = [
-  'Cardiologia',
-  'Pediatria',
-  'Ortopedia',
-  'Neurologia',
-  'Clínica Médica',
-  'Ginecologia',
-  'Cirurgia Geral',
-  'Psiquiatria',
-];
+const NIVEIS = ['N1', 'N2', 'N3', 'Líder'];
 
 const TURNOS = ['07:00 – 19:00', '19:00 – 07:00', '07:00 – 13:00', '13:00 – 19:00'];
 
 export default function CriarScreen() {
-  const [hospital, setHospital] = useState('');
-  const [dataPlantao, setDataPlantao] = useState('');
+  const [equipe, setEquipe] = useState('');
+  const [dataTurno, setDataTurno] = useState('');
   const [dataDesejada, setDataDesejada] = useState('');
-  const [especialidade, setEspecialidade] = useState('');
+  const [nivel, setNivel] = useState('');
   const [turno, setTurno] = useState('');
   const [observacao, setObservacao] = useState('');
 
   function handlePublicar() {
-    if (!hospital || !dataPlantao || !dataDesejada || !especialidade || !turno) {
+    if (!equipe || !dataTurno || !dataDesejada || !nivel || !turno) {
       Alert.alert('Atenção', 'Preencha todos os campos obrigatórios.');
       return;
     }
@@ -44,10 +35,10 @@ export default function CriarScreen() {
         {
           text: 'OK',
           onPress: () => {
-            setHospital('');
-            setDataPlantao('');
+            setEquipe('');
+            setDataTurno('');
             setDataDesejada('');
-            setEspecialidade('');
+            setNivel('');
             setTurno('');
             setObservacao('');
           },
@@ -64,24 +55,24 @@ export default function CriarScreen() {
         showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={styles.title}>Nova Solicitação</Text>
-          <Text style={styles.subtitle}>Publique um plantão para troca</Text>
+          <Text style={styles.subtitle}>Publique um turno para troca</Text>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Plantão a Oferecer</Text>
+          <Text style={styles.sectionTitle}>Turno a Oferecer</Text>
 
-          <Text style={styles.label}>Hospital / Clínica *</Text>
+          <Text style={styles.label}>Empresa / Equipe *</Text>
           <InputField
-            placeholder="Nome do hospital"
-            value={hospital}
-            onChangeText={setHospital}
+            placeholder="Nome da empresa ou equipe"
+            value={equipe}
+            onChangeText={setEquipe}
           />
 
-          <Text style={styles.label}>Data do Plantão *</Text>
+          <Text style={styles.label}>Data do Turno *</Text>
           <InputField
             placeholder="DD/MM/AAAA"
-            value={dataPlantao}
-            onChangeText={setDataPlantao}
+            value={dataTurno}
+            onChangeText={setDataTurno}
             keyboardType="numeric"
           />
 
@@ -99,15 +90,15 @@ export default function CriarScreen() {
             ))}
           </View>
 
-          <Text style={styles.label}>Especialidade *</Text>
+          <Text style={styles.label}>Nível *</Text>
           <View style={styles.chipsRow}>
-            {ESPECIALIDADES.map((e) => (
+            {NIVEIS.map((n) => (
               <TouchableOpacity
-                key={e}
-                style={[styles.chip, especialidade === e && styles.chipSelected]}
-                onPress={() => setEspecialidade(e)}>
-                <Text style={[styles.chipText, especialidade === e && styles.chipTextSelected]}>
-                  {e}
+                key={n}
+                style={[styles.chip, nivel === n && styles.chipSelected]}
+                onPress={() => setNivel(n)}>
+                <Text style={[styles.chipText, nivel === n && styles.chipTextSelected]}>
+                  {n}
                 </Text>
               </TouchableOpacity>
             ))}

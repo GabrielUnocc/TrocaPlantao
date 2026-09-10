@@ -16,13 +16,13 @@ import { PrimaryButton } from '@/components/atoms/PrimaryButton';
 export default function RegisterScreen() {
   const router = useRouter();
   const [nome, setNome] = useState('');
-  const [crm, setCrm] = useState('');
+  const [matricula, setMatricula] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
 
   function handleCadastro() {
-    if (!nome || !crm || !email || !senha || !confirmarSenha) {
+    if (!nome || !matricula || !email || !senha || !confirmarSenha) {
       Alert.alert('Atenção', 'Preencha todos os campos.');
       return;
     }
@@ -58,9 +58,9 @@ export default function RegisterScreen() {
             onChangeText={setNome}
           />
           <InputField
-            placeholder="CRM (ex: CRM-SP 12345)"
-            value={crm}
-            onChangeText={setCrm}
+            placeholder="Matrícula (ex: MAT-12345)"
+            value={matricula}
+            onChangeText={setMatricula}
             autoCapitalize="characters"
           />
 
