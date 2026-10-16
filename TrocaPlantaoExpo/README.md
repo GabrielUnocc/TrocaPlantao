@@ -18,17 +18,35 @@ Aplicativo mobile para atendentes de suporte (N1, N2, N3) e líderes/gestores so
 
 ## Como rodar o projeto
 
-**Pré-requisitos:** Node.js e Expo CLI instalados.
+### 1. Pré-requisitos
+
+- [Node.js LTS](https://nodejs.org) (v18 ou superior)
+- [Git](https://git-scm.com)
+- App **Expo Go** no celular → [Android](https://play.google.com/store/apps/details?id=host.exp.exponent) / [iOS](https://apps.apple.com/app/expo-go/id982107779)
+- Celular e computador na **mesma rede Wi-Fi**
+
+### 2. Clonar o repositório
 
 ```bash
-# Instalar dependências
-npm install
+git clone https://github.com/GabrielUnocc/TrocaPlantao.git
+cd TrocaPlantao/TrocaPlantaoExpo
+```
 
-# Iniciar o projeto
+> Atenção: entre na pasta `TrocaPlantaoExpo`, não na raiz do repositório.
+
+### 3. Instalar dependências
+
+```bash
+npm install
+```
+
+### 4. Iniciar o projeto
+
+```bash
 npx expo start
 ```
 
-Escaneie o QR code com o aplicativo **Expo Go** (Android ou iOS) para visualizar no dispositivo.
+Escaneie o QR code com o app **Expo Go** para visualizar no celular.
 
 ### Outros comandos
 
@@ -37,6 +55,15 @@ npm run android   # Rodar no emulador Android
 npm run ios       # Rodar no simulador iOS
 npm run web       # Rodar no navegador
 ```
+
+### Problemas comuns
+
+| Erro | Solução |
+|------|---------|
+| `Unable to find expo in this project` | Rode `npm install` dentro de `TrocaPlantaoExpo` |
+| App não carrega no Expo Go | Verifique se celular e PC estão na mesma rede Wi-Fi |
+| Sem Wi-Fi compartilhado | Use `npx expo start --tunnel` |
+| `Error loading Metro config` | Confirme que está na pasta `TrocaPlantaoExpo` |
 
 ## Estrutura do projeto
 
