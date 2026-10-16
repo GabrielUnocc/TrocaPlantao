@@ -1,0 +1,177 @@
+================================================================================
+  TROCAPLANTÃO — COMO CLONAR E RODAR O PROJETO DO ZERO
+================================================================================
+
+  Repositório: https://github.com/GabrielUnocc/TrocaPlantao.git
+  Tecnologia:  React Native + Expo (TypeScript)
+
+  Tempo estimado para configurar: 10 a 20 minutos
+
+================================================================================
+  PRÉ-REQUISITOS — O QUE PRECISA TER NA MÁQUINA
+================================================================================
+
+  Você vai precisar de:
+  1. Node.js (versão 18 ou superior)
+  2. Git
+  3. Expo Go instalado no celular (para testar o app)
+     OU um emulador Android configurado
+
+  Como verificar se já tem:
+    Abra o terminal e digite:
+      node --version     → deve aparecer v18.x.x ou superior
+      npm --version      → deve aparecer 9.x.x ou superior
+      git --version      → deve aparecer git version 2.x.x
+
+  Se não tiver, siga as instalações abaixo antes de continuar.
+
+================================================================================
+  PASSO 1 — INSTALAR O NODE.JS (se não tiver)
+================================================================================
+
+  Windows / Mac:
+    Acesse: https://nodejs.org
+    Baixe a versão "LTS" (botão verde da esquerda)
+    Instale normalmente
+
+  Linux (Ubuntu/Debian):
+    Abra o terminal e cole:
+      curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+      sudo apt-get install -y nodejs
+
+  Após instalar, feche e abra o terminal novamente e verifique:
+    node --version
+
+================================================================================
+  PASSO 2 — INSTALAR O GIT (se não tiver)
+================================================================================
+
+  Windows:
+    Acesse: https://git-scm.com
+    Baixe e instale (pode deixar todas as opções padrão)
+
+  Linux (Ubuntu/Debian):
+    sudo apt-get install git
+
+  Mac:
+    git vem instalado. Se não tiver, o próprio sistema vai pedir para instalar.
+
+================================================================================
+  PASSO 3 — INSTALAR O EXPO GO NO CELULAR
+================================================================================
+
+  O Expo Go é o app que roda o projeto no seu celular sem precisar gerar APK.
+
+  Android: Acesse a Play Store e busque "Expo Go"
+  iPhone:  Acesse a App Store e busque "Expo Go"
+
+  IMPORTANTE: O celular e o computador precisam estar na MESMA rede Wi-Fi.
+
+================================================================================
+  PASSO 4 — CLONAR O PROJETO DO GITHUB
+================================================================================
+
+  Abra o terminal na pasta onde quer salvar o projeto e rode:
+
+    git clone https://github.com/GabrielUnocc/TrocaPlantao.git
+
+  Isso vai criar a pasta "TrocaPlantao" com todo o código.
+
+  Depois entre na pasta do app Expo:
+
+    cd TrocaPlantao/TrocaPlantaoExpo
+
+  ATENÇÃO: o repositório tem duas pastas. A que você deve entrar é
+  "TrocaPlantaoExpo", não "TrocaPlantao" (sem o Expo).
+
+================================================================================
+  PASSO 5 — INSTALAR AS DEPENDÊNCIAS DO PROJETO
+================================================================================
+
+  Ainda dentro da pasta TrocaPlantaoExpo, rode:
+
+    npm install
+
+  Isso vai baixar todas as bibliotecas do projeto (pode demorar alguns minutos).
+  Vai criar uma pasta chamada "node_modules" — isso é normal.
+
+================================================================================
+  PASSO 6 — INSTALAR O EXPO CLI
+================================================================================
+
+  O Expo CLI é a ferramenta de linha de comando para rodar o projeto.
+  Instale globalmente com:
+
+    npm install -g expo-cli
+
+  Verifique se instalou:
+    npx expo --version
+
+================================================================================
+  PASSO 7 — RODAR O PROJETO
+================================================================================
+
+  Ainda dentro da pasta TrocaPlantaoExpo, rode:
+
+    npx expo start
+
+  O terminal vai exibir um QR code e abrir uma janela no navegador.
+
+  Para testar no celular:
+    → Android: Abra o app Expo Go e aponte a câmera para o QR code
+    → iPhone:  Abra a câmera do iPhone, aponte para o QR code e toque
+               na notificação que aparecer
+
+  Para testar no emulador Android (se tiver configurado):
+    → No terminal que abriu, pressione a tecla "a"
+
+  Para testar no navegador web:
+    → No terminal que abriu, pressione a tecla "w"
+
+================================================================================
+  RESUMO DOS COMANDOS (copie e cole em sequência)
+================================================================================
+
+  git clone https://github.com/GabrielUnocc/TrocaPlantao.git
+  cd TrocaPlantao/TrocaPlantaoExpo
+  npm install
+  npx expo start
+
+================================================================================
+  PROBLEMAS COMUNS
+================================================================================
+
+  ERRO: "Unable to find expo in this project"
+    → Rode npm install novamente dentro da pasta TrocaPlantaoExpo
+
+  ERRO: "Network response timed out" no Expo Go
+    → Verifique se o celular e o computador estão na mesma rede Wi-Fi
+    → Tente usar a opção "Tunnel" no terminal do Expo:
+       npx expo start --tunnel
+      (vai pedir para instalar @expo/ngrok — aceite com Y)
+
+  ERRO: "Error loading Metro config"
+    → Confirme que você está na pasta TrocaPlantaoExpo (não na raiz do repo)
+    → cd TrocaPlantao/TrocaPlantaoExpo
+
+  ERRO: "Command not found: npm"
+    → O Node.js não foi instalado corretamente. Repita o Passo 1.
+
+  App abre em tela branca ou trava:
+    → No terminal do Expo, pressione "r" para recarregar o app
+
+================================================================================
+  ESTRUTURA DO REPOSITÓRIO
+================================================================================
+
+  TrocaPlantao/                  ← pasta raiz do repositório
+  ├── TrocaPlantaoExpo/          ← projeto Expo (ESTE QUE VOCÊ RODA)
+  │   ├── app/                   → telas do aplicativo
+  │   ├── components/            → componentes reutilizáveis
+  │   ├── package.json           → dependências
+  │   └── ...
+  └── TrocaPlantao/              ← outro projeto (React Native puro, ignorar)
+
+================================================================================
+  FIM DO GUIA
+================================================================================
