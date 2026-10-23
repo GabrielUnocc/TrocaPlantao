@@ -12,7 +12,7 @@ Aplicativo mobile para atendentes de suporte (N1, N2, N3) e líderes/gestores so
 ## Tecnologias
 
 - [React Native](https://reactnative.dev/)
-- [Expo](https://expo.dev/) v57
+- [Expo](https://expo.dev/) SDK 57
 - [Expo Router](https://docs.expo.dev/router/introduction/) (navegação baseada em arquivos)
 - TypeScript
 
@@ -20,156 +20,119 @@ Aplicativo mobile para atendentes de suporte (N1, N2, N3) e líderes/gestores so
 
 ## Como rodar o projeto
 
-Tempo estimado para configurar: **10 a 20 minutos**
+> **Resumo rápido** (se você já tem Node.js, Git e o Expo Go):
+>
+> ```bash
+> git clone https://github.com/GabrielUnocc/TrocaPlantao.git
+> cd TrocaPlantao/TrocaPlantaoExpo
+> npm install
+> npx expo start
+> ```
 
----
+### 1. Pré-requisitos
 
-### Passo 1 — Verificar se Node.js e Git estão instalados
+| Ferramenta | Como verificar | Onde baixar |
+|---|---|---|
+| Node.js (versão LTS) | `node --version` | [nodejs.org](https://nodejs.org) |
+| Git | `git --version` | [git-scm.com](https://git-scm.com) |
+| Expo Go (no celular) | — | [Android](https://play.google.com/store/apps/details?id=host.exp.exponent) · [iPhone](https://apps.apple.com/app/expo-go/id982107779) |
 
-Abra o terminal e digite:
+No Linux (Ubuntu/Debian), dá para instalar o Node.js e o Git pelo terminal:
 
-```bash
-node --version
-npm --version
-git --version
-```
-
-Se aparecer as versões, pule para o Passo 3. Se der erro, siga o Passo 2.
-
----
-
-### Passo 2 — Instalar Node.js e Git (se não tiver)
-
-**Node.js:**
-- Acesse [https://nodejs.org](https://nodejs.org)
-- Baixe a versão **LTS** (botão verde da esquerda)
-- Instale normalmente
-
-No Linux (Ubuntu/Debian):
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-sudo apt-get install -y nodejs
+sudo apt-get install -y nodejs git
 ```
 
-**Git:**
-- Windows: acesse [https://git-scm.com](https://git-scm.com) e instale
-- Linux: `sudo apt-get install git`
-- Mac: o Git já vem instalado
+Depois de instalar, feche e abra o terminal novamente.
 
-Após instalar, feche e abra o terminal novamente.
-
----
-
-### Passo 3 — Instalar o Expo Go no celular
-
-O Expo Go permite rodar o app no celular sem precisar gerar um APK.
-
-- **Android:** [Baixar na Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent)
-- **iPhone:** [Baixar na App Store](https://apps.apple.com/app/expo-go/id982107779)
-
-> O celular e o computador precisam estar na **mesma rede Wi-Fi**.
-
----
-
-### Passo 4 — Clonar o repositório
+### 2. Clonar o repositório
 
 ```bash
 git clone https://github.com/GabrielUnocc/TrocaPlantao.git
-```
-
-Depois entre na pasta correta do projeto:
-
-```bash
 cd TrocaPlantao/TrocaPlantaoExpo
 ```
 
-> **Atenção:** o repositório tem duas pastas. Você deve entrar em `TrocaPlantaoExpo`, não na outra.
+> O código do app fica dentro da pasta **`TrocaPlantaoExpo`**. Todos os comandos abaixo devem ser rodados dentro dela.
 
----
-
-### Passo 5 — Instalar as dependências
+### 3. Instalar as dependências
 
 ```bash
 npm install
 ```
 
-Isso baixa todas as bibliotecas do projeto. Pode demorar alguns minutos. Vai criar uma pasta `node_modules` — isso é normal.
+Pode demorar alguns minutos na primeira vez.
 
----
-
-### Passo 6 — Rodar o projeto
+### 4. Rodar o app
 
 ```bash
 npx expo start
 ```
 
-O terminal vai exibir um QR code.
+O terminal vai exibir um QR code:
 
-- **Android:** Abra o app Expo Go e aponte a câmera para o QR code
-- **iPhone:** Abra a câmera do iPhone, aponte para o QR code e toque na notificação
+- **Android:** abra o Expo Go e escaneie o QR code
+- **iPhone:** abra a câmera, aponte para o QR code e toque na notificação
 - **Emulador Android:** pressione `a` no terminal
 - **Navegador:** pressione `w` no terminal
 
----
+> O celular e o computador precisam estar na **mesma rede Wi-Fi**.
 
-### Resumo dos comandos (copie e cole em sequência)
+### Scripts disponíveis
 
-```bash
-git clone https://github.com/GabrielUnocc/TrocaPlantao.git
-cd TrocaPlantao/TrocaPlantaoExpo
-npm install
-npx expo start
-```
+Rode dentro de `TrocaPlantaoExpo`:
+
+| Comando | O que faz |
+|---|---|
+| `npm start` | Inicia o servidor do Expo |
+| `npm run android` | Abre no emulador/dispositivo Android |
+| `npm run ios` | Abre no simulador iOS (somente macOS) |
+| `npm run web` | Abre no navegador |
+| `npm run lint` | Verifica o código com o ESLint |
 
 ---
 
 ## Problemas comuns
 
-**"Unable to find expo in this project"**
-- Rode `npm install` novamente dentro da pasta `TrocaPlantaoExpo`
+**"Unable to find expo in this project" ou "Error loading Metro config"**
+Confira se você está dentro da pasta `TrocaPlantaoExpo` e rode `npm install` novamente.
 
 **App não carrega no Expo Go / "Network response timed out"**
-- Verifique se o celular e o computador estão na mesma rede Wi-Fi
-- Tente usar o modo tunnel:
+Verifique se celular e computador estão na mesma rede Wi-Fi. Se não resolver, use o modo tunnel:
+
 ```bash
 npx expo start --tunnel
 ```
-(vai pedir para instalar `@expo/ngrok` — aceite com `y`)
-
-**"Error loading Metro config"**
-- Confirme que você está dentro da pasta `TrocaPlantaoExpo`:
-```bash
-cd TrocaPlantao/TrocaPlantaoExpo
-```
 
 **"Command not found: npm"**
-- O Node.js não foi instalado corretamente. Repita o Passo 2.
+O Node.js não foi instalado corretamente. Reinstale pelo passo 1.
 
 **App abre em tela branca ou trava**
-- No terminal do Expo, pressione `r` para recarregar o app
+No terminal do Expo, pressione `r` para recarregar.
 
 ---
 
-## Estrutura do projeto
+## Estrutura do repositório
 
 ```
-TrocaPlantaoExpo/
-├── app/
-│   ├── _layout.tsx          # Layout raiz (envolve todas as telas)
-│   ├── index.tsx            # Redireciona para /login automaticamente
-│   ├── login.tsx            # Tela de login
-│   ├── register.tsx         # Tela de cadastro
-│   └── (tabs)/
-│       ├── _layout.tsx      # Configura a barra de abas
-│       ├── index.tsx        # Feed de trocas disponíveis
-│       ├── criar.tsx        # Formulário de nova solicitação
-│       └── minhas-trocas.tsx # Perfil e histórico de solicitações
-├── components/
-│   ├── atoms/
-│   │   ├── InputField.tsx   # Campo de texto reutilizável
-│   │   └── PrimaryButton.tsx # Botão azul padrão
-│   └── molecules/           # Componentes compostos (expansão futura)
-├── metro.config.js          # Configuração do bundler Metro
-├── app.json                 # Configurações do app (nome, ícone, etc.)
-└── package.json             # Dependências do projeto
+TrocaPlantao/
+├── README.md
+└── TrocaPlantaoExpo/             # Projeto Expo (o app)
+    ├── app/                      # Telas (rotas do Expo Router)
+    │   ├── _layout.tsx           # Layout raiz
+    │   ├── index.tsx             # Redireciona para /login
+    │   ├── login.tsx             # Tela de login
+    │   ├── register.tsx          # Tela de cadastro
+    │   └── (tabs)/
+    │       ├── _layout.tsx       # Barra de abas
+    │       ├── index.tsx         # Feed de trocas disponíveis
+    │       ├── criar.tsx         # Nova solicitação de troca
+    │       └── minhas-trocas.tsx # Perfil e histórico
+    ├── components/
+    │   ├── atoms/                # InputField, PrimaryButton
+    │   └── ui/                   # Ícones
+    ├── hooks/
+    ├── assets/                   # Imagens e ícones do app
+    ├── app.json                  # Configurações do app
+    └── package.json              # Dependências e scripts
 ```
