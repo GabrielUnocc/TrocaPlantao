@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 
-type StatusTroca = 'aberta' | 'negociacao' | 'confirmada' | 'cancelada';
+type StatusTroca = 'aberta' | 'negociacao' | 'aguardando_gestor' | 'confirmada' | 'cancelada';
 
 type MinhaTroca = {
   id: string;
@@ -57,6 +57,7 @@ const MINHAS_TROCAS: MinhaTroca[] = [
 const STATUS_CONFIG: Record<StatusTroca, { label: string; color: string; bg: string }> = {
   aberta: { label: 'Aberta', color: '#2775F6', bg: '#1E2A38' },
   negociacao: { label: 'Em Negociação', color: '#F5A623', bg: '#2A2010' },
+  aguardando_gestor: { label: 'Aguardando Gestor', color: '#B388FF', bg: '#221A33' },
   confirmada: { label: 'Confirmada', color: '#4CAF50', bg: '#162A18' },
   cancelada: { label: 'Cancelada', color: '#F44336', bg: '#2A1616' },
 };
@@ -68,10 +69,14 @@ function MinhaTrocaCard({ troca }: { troca: MinhaTroca }) {
     if (troca.status === 'negociacao') {
       Alert.alert(
         'Negociação com ' + troca.interessado,
-        'Deseja confirmar a troca com este atendente?',
+        'Deseja confirmar a troca com este atendente? Ela será enviada para aprovação do gestor.',
         [
           { text: 'Cancelar', style: 'cancel' },
-          { text: 'Confirmar Troca', onPress: () => Alert.alert('Troca confirmada!') },
+          {
+            text: 'Confirmar Troca',
+            onPress: () =>
+              Alert.alert('Enviada ao gestor', 'A troca foi enviada para aprovação do gestor.'),
+          },
         ]
       );
     } else if (troca.status === 'aberta') {

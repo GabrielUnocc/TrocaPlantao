@@ -12,6 +12,7 @@ import {
 import { useRouter } from 'expo-router';
 import { InputField } from '@/components/atoms/InputField';
 import { PrimaryButton } from '@/components/atoms/PrimaryButton';
+import { isGestor } from '@/constants/auth';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -21,6 +22,10 @@ export default function LoginScreen() {
   function handleLogin() {
     if (!email || !senha) {
       Alert.alert('Atenção', 'Preencha e-mail e senha.');
+      return;
+    }
+    if (isGestor(email, senha)) {
+      router.replace('/gestor');
       return;
     }
     router.replace('/(tabs)');

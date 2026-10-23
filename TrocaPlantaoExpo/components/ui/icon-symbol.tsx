@@ -22,6 +22,9 @@ const MAPPING = {
   'plus.circle.fill': 'add-circle',
   'person.fill': 'person',
   'star.fill': 'star',
+  'chart.bar.fill': 'bar-chart',
+  'checkmark.circle.fill': 'check-circle',
+  'person.3.fill': 'groups',
 } as IconMapping;
 
 /**
