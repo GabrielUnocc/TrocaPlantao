@@ -1,0 +1,414 @@
+================================================================================
+  TEXTO BASE PARA APRESENTAÇÃO — TROCAPLANTÃO
+================================================================================
+
+  NOME DO PROJETO: TrocaPlantão
+  DISCIPLINA: Desenvolvimento de Dispositivos Móveis
+  ALUNO: Gabriel Rosário
+  REPOSITÓRIO: https://github.com/GabrielUnocc/TrocaPlantao
+
+================================================================================
+  1. INTRODUÇÃO E PROBLEMA RESOLVIDO
+================================================================================
+
+  Em ambientes de trabalho com turnos, como suporte técnico, atendimento ao
+  cliente e infraestrutura de TI, é muito comum que colaboradores precisem
+  trocar seus dias de plantão com colegas. Hoje, essa comunicação acontece
+  de forma desorganizada — por grupos de WhatsApp, mensagens diretas ou
+  até anotações em papel — o que gera confusão, falta de rastreabilidade
+  e dificuldade para gestores acompanharem as mudanças de escala.
+
+  O TrocaPlantão resolve esse problema oferecendo um aplicativo mobile
+  centralizado onde os próprios colaboradores publicam os turnos que desejam
+  trocar, visualizam as ofertas de colegas e gerenciam todo o processo
+  de negociação em um único lugar. Além disso, o aplicativo oferece um
+  painel completo para gestores aprovarem trocas, acompanharem a equipe
+  e detectarem conflitos automaticamente.
+
+================================================================================
+  2. OBJETIVO DO PROJETO
+================================================================================
+
+  Desenvolver um aplicativo mobile funcional utilizando React Native e Expo,
+  aplicando os conceitos estudados na disciplina:
+
+  - Navegação entre telas com Expo Router
+  - Componentização com Atomic Design
+  - Gerenciamento de estado com hooks do React (useState) e Context API
+  - Validação de formulários
+  - Interface responsiva e com identidade visual consistente
+  - Tipagem estática com TypeScript
+  - Separação de perfis de acesso (atendente e gestor)
+
+  O projeto foi desenvolvido sem backend, utilizando dados mockados
+  (fixos no código), conforme orientação do professor.
+
+================================================================================
+  3. TECNOLOGIAS UTILIZADAS
+================================================================================
+
+  React Native:
+    Framework criado pelo Facebook para desenvolver aplicativos mobile
+    usando JavaScript/TypeScript. Permite escrever um único código que
+    roda tanto no Android quanto no iOS.
+
+  Expo (versão 57):
+    Plataforma construída sobre o React Native que simplifica o desenvolvimento,
+    fornecendo ferramentas prontas para câmera, ícones, fontes, splash screen,
+    e muito mais. Elimina a necessidade de configurar Android Studio ou Xcode
+    para rodar o app durante o desenvolvimento.
+
+  Expo Router (versão 57):
+    Sistema de navegação baseado em arquivos, similar ao Next.js para web.
+    O nome do arquivo determina a rota automaticamente, sem necessidade de
+    configurar rotas manualmente.
+
+  TypeScript:
+    Superset do JavaScript que adiciona tipagem estática. Permite detectar
+    erros em tempo de desenvolvimento, antes de rodar o código.
+
+  React Context API:
+    Solução nativa do React para compartilhar estado entre componentes sem
+    prop drilling. Usada no painel do gestor para compartilhar trocas,
+    atendentes e ações (aprovar, recusar, desfazer) entre as três abas.
+
+================================================================================
+  4. ARQUITETURA E ORGANIZAÇÃO DO CÓDIGO
+================================================================================
+
+  O projeto adota a metodologia Atomic Design para organização dos componentes,
+  dividindo-os em camadas de complexidade crescente:
+
+  ATOMS (átomos):
+    São os menores blocos de construção da interface. Componentes simples,
+    sem lógica de negócio, que apenas recebem props e renderizam elementos
+    visuais. No projeto foram criados dois atoms:
+
+    - InputField: campo de texto estilizado com cores e bordas do tema do app.
+      Reutilizado em todas as telas que possuem formulários (login, cadastro,
+      criar solicitação, busca no painel do gestor).
+
+    - PrimaryButton: botão azul padrão do aplicativo. Recebe o texto e a
+      função a ser executada como props. Reutilizado em todas as telas.
+
+  MOLECULES (moléculas):
+    Compostos por dois ou mais atoms. A pasta existe no projeto e está
+    preparada para expansão futura.
+
+  PAGES (páginas):
+    As telas completas do aplicativo, localizadas na pasta app/. Combinam
+    atoms, molecules e lógica de estado para formar as telas finais.
+
+  HOOKS (lógica de contexto):
+    A pasta hooks/ concentra a lógica de negócio compartilhada. O hook
+    useGestor() expõe estado e ações do painel do gestor via Context API,
+    mantendo as telas limpas e focadas na apresentação.
+
+  CONSTANTS (dados e configurações):
+    A pasta constants/ centraliza dados mockados, tipos TypeScript e
+    funções utilitárias (formatação de datas, cálculo de conflitos),
+    separando dados de interface.
+
+  Essa organização torna o código mais fácil de manter e reutilizar,
+  evitando repetição e facilitando futuras alterações de estilo.
+
+================================================================================
+  5. NAVEGAÇÃO — EXPO ROUTER
+================================================================================
+
+  O Expo Router utiliza o sistema de arquivos para definir as rotas.
+  Cada arquivo dentro da pasta app/ vira automaticamente uma rota navegável.
+
+  Tipos de navegação utilizados no projeto:
+
+  Stack Navigator:
+    Modelo de pilha onde as telas são empilhadas umas sobre as outras.
+    Usado nas telas de autenticação (login e cadastro). Quando o usuário
+    navega de login para cadastro, a tela de cadastro é colocada no topo
+    da pilha. Ao voltar, ela é removida e login aparece novamente.
+
+  Tab Navigator (atendente):
+    Barra de abas na parte inferior da tela. Usado na área principal do app
+    após o login de atendente. Permite alternar rapidamente entre as três
+    seções: Trocas, Criar e Minhas Trocas.
+
+  Tab Navigator (gestor):
+    Segunda instância de Tab Navigator, exclusiva para o perfil de gestor.
+    Três abas: Painel, Aprovações (com badge dinâmico de pendências) e
+    Equipe. As abas compartilham estado via GestorProvider.
+
+  Grupo de rotas (tabs e gestor):
+    A pasta (tabs) usa parênteses para agrupar telas sem adicionar o nome
+    da pasta na URL. A pasta gestor/ funciona como rota aninhada com seu
+    próprio layout de tabs.
+
+  Fluxo completo de navegação:
+    Abertura → /login
+    Login atendente → /(tabs)/index
+    Login gestor (gestor@trocaplantao.com / gestor123) → /gestor
+    /login → "Não tem conta?" → /register → (cadastro) → /login
+    /(tabs)/minhas-trocas → "Sair" → /login
+    /gestor → "Sair" → /login
+
+================================================================================
+  6. TELAS DO APLICATIVO
+================================================================================
+
+  --- ÁREA DO ATENDENTE ---
+
+  TELA 1 — LOGIN (/login)
+    Primeira tela exibida ao abrir o app.
+    Campos: e-mail e senha.
+    Validação: verifica se os campos estão preenchidos antes de prosseguir.
+    Roteamento por perfil: se as credenciais corresponderem ao gestor
+    (gestor@trocaplantao.com / gestor123), navega para /gestor; caso
+    contrário, navega para a área do atendente.
+    Ao entrar com sucesso, usa router.replace para impedir o usuário de
+    voltar para o login com o botão de voltar.
+    Link para a tela de cadastro.
+    Visual: logo do app com ícone, título e subtítulo, formulário em card
+    sobre fundo escuro.
+
+  TELA 2 — CADASTRO (/register)
+    Tela para criação de nova conta.
+    Campos: nome completo, matrícula, e-mail, senha, confirmação de senha.
+    Validações: todos os campos obrigatórios e conferência se as senhas
+    coincidem.
+    Após cadastro bem-sucedido, exibe confirmação e retorna para o login.
+    O formulário é dividido em seções ("Dados Pessoais" e "Acesso")
+    para melhor organização visual.
+
+  TELA 3 — FEED DE TROCAS (/(tabs)/index)
+    Tela principal após o login. Lista todas as solicitações de troca
+    disponíveis de outros colaboradores.
+    Cada card exibe: avatar com inicial do nome, nome completo, matrícula,
+    nível (N1/N2/N3), equipe, turno oferecido, data desejada e botão
+    "Solicitar Troca".
+    A lista é renderizada com FlatList para melhor performance.
+    O botão de solicitar exibe um Alert confirmando o envio da solicitação.
+    Badge no cabeçalho mostra a quantidade total de trocas disponíveis.
+
+  TELA 4 — CRIAR SOLICITAÇÃO (/(tabs)/criar)
+    Formulário para publicar um turno que o usuário deseja trocar.
+    Campos de texto: empresa/equipe, data do turno, data desejada,
+    observações (campo multilinha).
+    Seleção por chips interativos: turno (4 opções) e nível (4 opções).
+    Os chips destacam visualmente a opção selecionada com fundo azul.
+    Validação dos campos obrigatórios antes de publicar.
+    Após publicar, limpa o formulário automaticamente.
+
+  TELA 5 — MINHAS TROCAS (/(tabs)/minhas-trocas)
+    Tela de perfil com histórico de solicitações do usuário.
+    Cabeçalho: avatar, nome e matrícula do colaborador, botão de logout.
+    Estatísticas rápidas em cards: solicitações ativas, confirmadas e total.
+    Lista de solicitações com status colorido:
+      - Azul: Aberta (aguardando interessados)
+      - Amarelo: Em Negociação (alguém demonstrou interesse)
+      - Verde: Confirmada (troca aceita por ambas as partes)
+      - Vermelho: Cancelada
+    Ações contextuais por status:
+      - Em Negociação: botão "Ver Proposta" para confirmar a troca
+      - Aberta: botão "Cancelar Solicitação"
+      - Confirmada/Cancelada: sem ação disponível
+
+  --- ÁREA DO GESTOR ---
+
+  TELA 6 — PAINEL DO GESTOR (/gestor)
+    Tela principal da área gerencial, com visão geral de todas as trocas.
+    Grid de 4 estatísticas: pendentes, urgentes (turno em ≤ 3 dias),
+    aprovadas e taxa de aprovação.
+    Seção "Precisam de atenção": lista as trocas pendentes urgentes ou
+    com conflitos detectados automaticamente, ordenadas por proximidade
+    do turno. Cada item exibe a contagem regressiva em dias e a
+    descrição do conflito. Clicável para abrir a tela de aprovações.
+    Gráfico de barras por equipe: visualiza o volume de trocas
+    (aprovadas, pendentes, recusadas) por equipe com legenda de cores.
+    Seção "Fora da escala": exibe atendentes em férias ou afastados.
+    Seção "Decisões recentes": últimas 4 trocas decididas com status.
+    Botão de logout com confirmação via Alert.
+
+  TELA 7 — APROVAÇÃO DE TROCAS (/gestor/aprovacoes)
+    Tela de gestão operacional de todas as solicitações.
+    Campo de busca por nome, matrícula ou equipe.
+    Filtros em chips horizontais: Pendente / Aprovada / Recusada,
+    com contador de itens em cada filtro.
+    Ordenação automática: pendentes por turno mais próximo primeiro;
+    decididas por mais recentes primeiro.
+    Detecção automática de conflitos em cada troca:
+      - Substituto em férias ou afastado
+      - Substituto com nível diferente do exigido pelo turno
+      - Qualquer parte atingiu o limite mensal de trocas
+      - Substituto já cobre outro turno aprovado na mesma data
+    Destaque visual: cards com borda vermelha para trocas urgentes e
+    caixas de alerta amarelas para os conflitos detectados.
+    Aprovação em lote: botão para aprovar de uma vez todas as trocas
+    pendentes sem nenhum alerta (aparece apenas quando há mais de uma).
+    Fluxo de recusa: abre modal com chips de motivos predefinidos
+    (ex: "Cobertura insuficiente no turno") e campo livre para
+    outros motivos. O botão confirmar só fica ativo com motivo preenchido.
+    Desfazer decisão: qualquer troca já decidida pode ser revertida
+    para "pendente" com confirmação.
+
+  TELA 8 — GESTÃO DE EQUIPE (/gestor/equipe)
+    Visão completa de todos os colaboradores cadastrados.
+    Configurador de limite mensal de trocas por atendente: stepper
+    interativo que altera o limite para toda a equipe em tempo real,
+    refletindo imediatamente nos alertas de conflito das outras telas.
+    Cada card de atendente exibe: avatar com iniciais, nome, matrícula,
+    nível, equipe, badge de situação (Ativo / Férias / Afastado) e
+    barra de progresso mostrando quantas trocas do mês foram usadas.
+    A cor da barra muda conforme o uso: verde → amarelo → vermelho.
+    Busca por nome ou matrícula e filtro por equipe (chips).
+    Modal de detalhes do atendente: abre ao tocar em qualquer card.
+      - Resumo: trocas no mês, vezes que pediu troca, vezes que cobriu.
+      - Editor de situação: chips para escolher Ativo / Férias / Afastado.
+        Para férias e afastamento, exibe campo de data de retorno prevista
+        com atalhos rápidos (+7, +15, +30 dias) e máscara automática
+        de digitação (dd/mm/aaaa). O botão "Salvar" só aparece quando
+        há mudança e a data é válida.
+      - Histórico completo de trocas do atendente com status colorido.
+
+================================================================================
+  7. IDENTIDADE VISUAL
+================================================================================
+
+  O aplicativo possui uma identidade visual coerente em todas as telas,
+  com paleta de cores inspirada em interfaces de gestão profissional:
+
+  Cores principais:
+    - Fundo escuro principal: #0F1923 (azul quase preto)
+    - Fundo dos cards: #162030 (azul escuro)
+    - Fundo de elementos internos: #1E2A38 (azul médio)
+    - Azul de destaque (ações, badges): #2775F6
+    - Texto principal: #FFFFFF
+    - Texto secundário: #596579 (cinza azulado)
+    - Texto de apoio: #AABBC9
+
+  Status com cores semânticas:
+    - Verde (#4CAF50): confirmado/aprovado/ativo
+    - Amarelo (#F5A623): em andamento/pendente/atenção
+    - Vermelho (#F44336): cancelado/recusado/urgente/afastado
+    - Azul (#2775F6): férias
+
+  A consistência visual foi garantida reutilizando os mesmos valores de cor
+  em todos os arquivos, sem uso de biblioteca de temas.
+
+================================================================================
+  8. DECISÕES TÉCNICAS RELEVANTES
+================================================================================
+
+  Por que Expo Router em vez de React Navigation?
+    O Expo Router é a solução moderna recomendada pela própria Expo. A
+    navegação baseada em arquivos reduz configuração manual e torna a
+    estrutura do projeto mais intuitiva para quem conhece desenvolvimento web.
+
+  Por que dados mockados?
+    O projeto foi desenvolvido sem backend por orientação do professor.
+    Os dados fixos permitem demonstrar todas as funcionalidades da interface
+    sem necessidade de servidor, banco de dados ou autenticação real.
+
+  Por que FlatList e não ScrollView para listas?
+    FlatList renderiza apenas os itens visíveis na tela em determinado momento,
+    enquanto ScrollView renderiza todos de uma vez. Para listas de trocas que
+    podem crescer, FlatList é a escolha correta de performance.
+
+  Por que chips em vez de dropdown para seleção?
+    Com poucas opções fixas (4 turnos, 4 níveis, 3 situações), chips interativos
+    oferecem melhor experiência mobile do que um seletor, pois o usuário vê
+    todas as opções de uma vez sem precisar abrir um menu.
+
+  Por que router.replace no login?
+    Usar replace em vez de push impede que o usuário volte para a tela de
+    login pressionando o botão de voltar após autenticar, o que seria uma
+    experiência indesejada.
+
+  Por que Context API para o painel do gestor?
+    As três abas do gestor (Painel, Aprovações, Equipe) precisam do mesmo
+    estado: lista de trocas, atendentes e limite mensal. Sem Context API,
+    seria necessário subir o estado ao layout pai e passar por props para
+    cada aba. O GestorProvider encapsula esse estado e disponibiliza as
+    funções (aprovar, recusar, desfazer, alterarSituacao) para qualquer
+    tela dentro da área do gestor.
+
+  Por que detectar conflitos no cliente?
+    Sem backend, toda a lógica de validação roda no dispositivo. A função
+    conflitosDaTroca() verifica quatro tipos de problemas (substituto
+    indisponível, nível incompatível, limite mensal, duplicidade de turno)
+    e retorna a lista de alertas. Isso mostra ao gestor os riscos antes
+    de aprovar, mesmo que a decisão final seja dele.
+
+  Por que datas relativas nos dados mockados?
+    Os mocks usam a função daqui(n) para gerar datas sempre relativas ao
+    dia atual. Assim, trocas "urgentes" (turno em ≤ 3 dias) continuam
+    sendo urgentes independentemente de quando o app for demonstrado,
+    sem precisar atualizar os dados manualmente.
+
+================================================================================
+  9. ESTRUTURA DE ARQUIVOS
+================================================================================
+
+  TrocaPlantaoExpo/
+  ├── app/
+  │   ├── _layout.tsx              → Layout raiz: tema, Stack e StatusBar
+  │   ├── index.tsx                → Redireciona para /login
+  │   ├── login.tsx                → Tela de login (roteia por perfil)
+  │   ├── register.tsx             → Tela de cadastro
+  │   ├── (tabs)/
+  │   │   ├── _layout.tsx          → Configura Tab Navigator do atendente
+  │   │   ├── index.tsx            → Feed de trocas disponíveis
+  │   │   ├── criar.tsx            → Formulário de nova solicitação
+  │   │   └── minhas-trocas.tsx    → Perfil e histórico do atendente
+  │   └── gestor/
+  │       ├── _layout.tsx          → Layout de tabs do gestor (GestorProvider)
+  │       ├── index.tsx            → Painel com visão geral e estatísticas
+  │       ├── aprovacoes.tsx       → Aprovação de trocas com filtros
+  │       └── equipe.tsx           → Gestão da equipe e situações
+  ├── components/
+  │   ├── atoms/
+  │   │   ├── InputField.tsx       → Campo de texto reutilizável
+  │   │   └── PrimaryButton.tsx    → Botão azul reutilizável
+  │   └── molecules/               → (preparado para expansão)
+  ├── constants/
+  │   ├── auth.ts                  → Credencial mockada do gestor e isGestor()
+  │   └── gestor-data.ts           → Tipos, dados mockados e funções utilitárias
+  ├── hooks/
+  │   └── use-gestor.tsx           → Context API do painel do gestor
+  ├── metro.config.js              → Configuração do bundler
+  ├── app.json                     → Nome, ícone, configurações do app
+  └── package.json                 → Dependências e scripts
+
+================================================================================
+  10. ACESSO AO PAINEL DO GESTOR
+================================================================================
+
+  O aplicativo possui dois perfis de acesso, diferenciados na tela de login:
+
+  ATENDENTE (qualquer e-mail e senha):
+    Acessa a área de publicação e negociação de trocas.
+    Rota: /(tabs)/index
+
+  GESTOR (credencial fixa de demonstração):
+    E-mail: gestor@trocaplantao.com
+    Senha:  gestor123
+    Acessa o painel gerencial completo.
+    Rota: /gestor
+
+  Em produção, essa distinção seria feita por um backend real com papéis
+  de usuário (roles). No projeto mockado, a função isGestor() compara as
+  credenciais digitadas com a constante fixa em constants/auth.ts.
+
+================================================================================
+  11. O QUE PODERIA SER EXPANDIDO (TRABALHOS FUTUROS)
+================================================================================
+
+  - Persistência de dados com AsyncStorage (salvar localmente no celular)
+  - Integração com backend real (Node.js + banco de dados)
+  - Notificações push quando alguém solicitar uma troca ou a troca for decidida
+  - Filtros no feed do atendente por equipe, nível ou data
+  - Autenticação real com validação de credenciais e papéis de usuário
+  - Exportação de relatórios de trocas pelo gestor (PDF ou CSV)
+  - Histórico de auditor: log de quem aprovou/recusou cada troca
+
+================================================================================
+  FIM DO DOCUMENTO
+================================================================================
