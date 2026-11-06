@@ -1,0 +1,39 @@
+{
+  "name": "trocaplantao-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "API de autenticacao do TrocaPlantao",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "tsx watch --env-file=.env src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node --env-file=.env dist/server.js",
+    "migrate": "tsx --env-file=.env scripts/migrate.ts",
+    "seed": "tsx --env-file=.env scripts/seed.ts",
+    "test": "tsx --test --env-file=.env.test tests/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "db:inspect": "tsx --env-file=.env scripts/inspect-db.ts",
+    "demo": "tsx --env-file=.env.demo scripts/demo.ts"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "better-sqlite3": "^12.4.1",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^22.18.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

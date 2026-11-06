@@ -1,0 +1,59 @@
+# Arquivo para a extensao "REST Client" do VS Code.
+# Clique em "Send Request" acima de cada bloco.
+@host = http://localhost:3333
+
+### Health check
+GET {{host}}/health
+
+### Cadastro
+# @name register
+POST {{host}}/auth/register
+Content-Type: application/json
+
+{
+  "nome": "Rafael Lima",
+  "matricula": "MAT-12345",
+  "email": "rafael@trocaplantao.com",
+  "senha": "senhaSegura123",
+  "nivel": "N2",
+  "equipe": "Suporte TI"
+}
+
+### Login (gestor do seed)
+# @name login
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "gestor@trocaplantao.com",
+  "senha": "gestor123"
+}
+
+### Dados do usuario logado
+GET {{host}}/auth/me
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
+
+### Rota exclusiva de gestor
+GET {{host}}/gestor/ping
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
+
+### Renovar o par de tokens
+# @name refresh
+POST {{host}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{login.response.body.tokens.refreshToken}}"
+}
+
+### Logout (invalida o refresh atual)
+POST {{host}}/auth/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refresh.response.body.tokens.refreshToken}}"
+}
+
+### Logout de todos os dispositivos
+POST {{host}}/auth/logout-all
+Authorization: Bearer {{login.response.body.tokens.accessToken}}

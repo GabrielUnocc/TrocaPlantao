@@ -1,0 +1,323 @@
+================================================================================
+  TEXTO BASE PARA APRESENTAÇÃO — TROCAPLANTÃO / API DE AUTENTICAÇÃO
+================================================================================
+
+  PROJETO: TrocaPlantão — backend de autenticação
+  DISCIPLINA: Desenvolvimento de Dispositivos Móveis
+  ALUNO: Gabriel Rosário
+  REPOSITÓRIO: https://github.com/GabrielUnocc/TrocaPlantao  (pasta backend/)
+
+  COMO ESTE TRABALHO SE LIGA AO ANTERIOR:
+    O APRESENTACAO_PROJETO.txt, na seção 11 (Trabalhos Futuros), listou:
+      - "Integração com backend real (Node.js + banco de dados)"
+      - "Autenticação real com validação de credenciais e papéis de usuário"
+    Esta entrega implementa esses dois itens. O app mobile continua intacto;
+    o que foi construído é a API que vai substituir os dados mockados.
+
+================================================================================
+  1. O PROBLEMA QUE ESTA ENTREGA RESOLVE
+================================================================================
+
+  Na versão mockada, a autenticação era simulada:
+
+    - O arquivo constants/auth.ts guardava e-mail e senha do gestor em
+      texto puro. Como esse arquivo vai dentro do bundle do aplicativo,
+      qualquer pessoa com acesso ao APK consegue ler a credencial.
+
+    - A tela de login não validava nada: a função isGestor() comparava o
+      texto digitado com a constante fixa e, se não batesse, o usuário
+      entrava como atendente. Ou seja, QUALQUER e-mail com QUALQUER senha
+      conseguia acessar o aplicativo.
+
+    - A separação entre atendente e gestor acontecia no dispositivo. Toda
+      decisão tomada no cliente é uma decisão que o usuário pode alterar.
+
+  Isso era adequado para demonstrar a interface, que era o objetivo da
+  entrega anterior. Mas não é autenticação: é a aparência de autenticação.
+
+================================================================================
+  2. ESCOLHA DO MÉTODO — POR QUE TOKEN E NÃO SESSÃO
+================================================================================
+
+  Foram avaliadas quatro abordagens:
+
+  a) SESSÃO COM COOKIE
+     O servidor guarda a sessão e o navegador devolve o cookie a cada
+     requisição. Funciona bem na web, mas em aplicativo nativo não existe
+     o navegador que administra cookies automaticamente. Descartada.
+
+  b) BASIC AUTH
+     O aplicativo manda e-mail e senha em toda requisição. A senha circula
+     na rede constantemente, não há como expirar nem revogar o acesso sem
+     trocar a senha. Descartada.
+
+  c) UM ÚNICO TOKEN JWT DE LONGA DURAÇÃO (7 a 30 dias)
+     Simples de implementar, mas impossível de revogar: como o token não é
+     guardado em lugar nenhum, um token roubado funciona até a data de
+     expiração e o servidor não tem como cancelá-lo. Descartada.
+
+  d) ACCESS TOKEN CURTO + REFRESH TOKEN LONGO  ← ESCOLHIDA
+     Dois tokens com funções diferentes:
+
+       accessToken  — JWT assinado, validade de 15 minutos, usado em toda
+                      requisição. NÃO é guardado no banco.
+       refreshToken — 32 bytes aleatórios, validade de 30 dias, usado só
+                      para obter um accessToken novo. Guardado no banco
+                      como hash SHA-256.
+
+  JUSTIFICATIVA DA ESCOLHA (três motivos):
+
+    1. DESEMPENHO — Validar o accessToken não consulta o banco de dados.
+       A assinatura criptográfica já prova que o token foi emitido por
+       este servidor, e o campo "exp" já prova que está no prazo. Cada
+       tela do aplicativo pode chamar a API sem gerar consulta de sessão.
+
+    2. JANELA DE DANO CURTA — Um accessToken interceptado vale no máximo
+       15 minutos. É o oposto do JWT longo, em que o token roubado vale
+       um mês inteiro sem possibilidade de cancelamento.
+
+    3. REVOGAÇÃO REAL — Como o refreshToken está no banco, as operações
+       de logout, "sair de todos os dispositivos" e bloqueio de usuário
+       funcionam de fato: basta marcar a linha como revogada.
+
+================================================================================
+  3. ROTAÇÃO E DETECÇÃO DE REUSO
+================================================================================
+
+  Cada chamada a /auth/refresh invalida o refreshToken apresentado e emite
+  um novo. Os tokens de uma mesma sessão compartilham um identificador
+  chamado family_id — o login cria a família e cada renovação herda o
+  mesmo valor.
+
+  Em uso normal, um refreshToken é apresentado exatamente uma vez. Se um
+  token JÁ UTILIZADO reaparece, existem apenas duas explicações: alguém
+  obteve uma cópia, ou houve reenvio da mesma requisição.
+
+  O servidor não tem como saber qual das duas partes é a legítima — tanto
+  o usuário real quanto um atacante podem ter chegado primeiro. A resposta
+  segura é não confiar em nenhuma das duas: a família inteira é revogada
+  e o login passa a ser obrigatório. O usuário real perde a sessão; o
+  atacante fica sem acesso.
+
+  Esse comportamento segue a recomendação da RFC 6819 e do documento
+  OAuth 2.0 Security Best Current Practice.
+
+================================================================================
+  4. OUTRAS DECISÕES DE SEGURANÇA
+================================================================================
+
+  SENHA ARMAZENADA COM BCRYPT, CUSTO 12
+    A senha nunca é gravada em texto. O bcrypt é deliberadamente lento
+    (cerca de 250 ms por hash), o que encarece ataques de força bruta.
+    O custo 12 é o fator de trabalho: cada incremento dobra o tempo.
+
+  LIMITE DE 72 CARACTERES NA SENHA
+    O algoritmo bcrypt ignora qualquer byte além do 72º. Sem esse limite
+    explícito, uma senha de 100 caracteres e outra com os mesmos 72
+    primeiros caracteres seriam tratadas como idênticas.
+
+  REFRESH TOKEN GRAVADO COMO HASH SHA-256
+    Se o banco de dados vazar, os refresh tokens vazados são inúteis.
+    Usa-se SHA-256 e não bcrypt porque o token já tem 256 bits de
+    entropia aleatória — não é um valor adivinhável como uma senha, e a
+    renovação precisa ser rápida.
+
+  RESPOSTA IDÊNTICA PARA SENHA ERRADA E E-MAIL INEXISTENTE
+    As duas situações retornam exatamente o mesmo código e a mesma
+    mensagem. Se fossem diferentes, seria possível descobrir quais
+    e-mails estão cadastrados (enumeração de usuários).
+
+  TEMPO DE RESPOSTA IGUALADO
+    Quando o e-mail não existe, o servidor compara a senha digitada
+    contra um hash descartável só para gastar o mesmo tempo. Sem isso,
+    e-mail inexistente responderia em 2 ms e e-mail válido com senha
+    errada em 250 ms — e essa diferença de tempo entregaria a informação
+    que a mensagem igual estava escondendo (timing attack).
+
+  PAPEL IGNORADO NO CADASTRO
+    O campo role é fixado como "atendente" no servidor. Mesmo que o
+    cliente envie {"role": "gestor"}, o valor é descartado. Promover
+    alguém a gestor é ato administrativo, não escolha de quem se cadastra.
+
+  LIMITE DE TENTATIVAS DE LOGIN POR IP + E-MAIL
+    A chave combina os dois propositalmente. Só por IP, uma rede
+    compartilhada (NAT) travaria todos os usuários juntos. Só por e-mail,
+    qualquer pessoa poderia bloquear a conta de outra de fora, errando
+    senhas de propósito. A combinação limita a força bruta sem permitir
+    que terceiros tranquem contas alheias.
+
+  ALGORITMO DE ASSINATURA FIXADO EM HS256
+    A verificação declara explicitamente algorithms: ['HS256']. Sem essa
+    restrição, um atacante poderia enviar um JWT com cabeçalho
+    "alg": "none" e a biblioteca o aceitaria sem assinatura. É a
+    vulnerabilidade mais conhecida de implementações de JWT.
+
+  VALIDAÇÃO DAS VARIÁVEIS DE AMBIENTE NA INICIALIZAÇÃO
+    Se JWT_SECRET faltar ou tiver menos de 32 caracteres, o processo
+    encerra com mensagem explicativa antes de aceitar qualquer conexão,
+    em vez de falhar no meio de uma requisição em produção.
+
+================================================================================
+  5. TECNOLOGIAS E ARQUITETURA
+================================================================================
+
+  Node.js 22 + TypeScript   — mesma linguagem do aplicativo mobile
+  Express 5                 — framework HTTP
+  SQLite (better-sqlite3)   — banco em arquivo, sem servidor para instalar
+  bcryptjs                  — hash de senha
+  jsonwebtoken              — assinatura e verificação do JWT
+  Zod                       — validação dos dados de entrada
+  node:test                 — testes automatizados (runner nativo do Node)
+
+  ORGANIZAÇÃO EM CAMADAS:
+
+    rota → controller → service → repository
+
+      routes      define o caminho e quais middlewares se aplicam
+      controller  traduz HTTP: lê o corpo, devolve status e JSON
+      service     contém a regra de negócio (é onde está a segurança)
+      repository  único lugar que escreve SQL
+
+  O benefício prático dessa separação: trocar SQLite por PostgreSQL mexe
+  apenas nos repositories e na pasta db/. Nenhuma regra de negócio muda.
+
+  PASTAS:
+
+    src/config/env.ts        validação do ambiente
+    src/db/                  conexão e schema.sql
+    src/middlewares/         autenticação, papéis, limite, erros
+    src/modules/auth/        rotas, controller, service, schemas
+    src/modules/users/       repositório e tipos de usuário
+    src/shared/              senha, tokens, erros, validação
+    scripts/                 migrate, seed, demo, inspeção do banco
+    tests/                   19 testes automatizados
+
+================================================================================
+  6. ENDPOINTS
+================================================================================
+
+  GET   /health            verificação de disponibilidade
+  POST  /auth/register     cadastro de atendente, já devolve a sessão
+  POST  /auth/login        autenticação, devolve o par de tokens
+  POST  /auth/refresh      rotaciona o refresh e devolve par novo
+  POST  /auth/logout       invalida o refresh apresentado
+  POST  /auth/logout-all   encerra todas as sessões (exige access token)
+  GET   /auth/me           dados do usuário do token (exige access token)
+  GET   /gestor/ping       exemplo de rota restrita ao papel de gestor
+
+  Todo erro sai no mesmo formato, com um código estável:
+
+    { "error": { "code": "TOKEN_EXPIRED", "message": "..." } }
+
+  O código é o que o aplicativo usa para decidir o que fazer. A distinção
+  entre TOKEN_EXPIRED e TOKEN_INVALID é essencial: no primeiro caso o app
+  renova a sessão em silêncio; no segundo, manda o usuário para o login.
+  Sem essa diferença, o usuário seria expulso do app a cada 15 minutos.
+
+================================================================================
+  7. COMO DEMONSTRAR
+================================================================================
+
+  PREPARAÇÃO (fazer antes da apresentação):
+
+    cd backend
+    npm install
+    cp .env.example .env
+    npm run migrate
+    npm run seed
+
+  DEMONSTRAÇÃO PRINCIPAL — um único comando:
+
+    npm run demo
+
+  Executa o fluxo completo explicando cada resposta na tela, em 10 passos:
+  cadastro, senha gravada como hash, credenciais erradas, conteúdo do JWT,
+  rota protegida, expiração do token ao vivo, renovação, token roubado,
+  autorização por papel e o rastro no banco.
+
+  Para apresentar com pausas (espera ENTER entre cada passo):
+
+    npm run demo -- --pausar
+
+  TESTES AUTOMATIZADOS:
+
+    npm test
+
+  Resultado esperado: 19 testes, 0 falhas. Os testes cobrem os mesmos
+  comportamentos da demonstração, incluindo a expiração real do token
+  (o ambiente de teste usa validade de 2 segundos e o teste aguarda).
+
+  INSPEÇÃO DO BANCO:
+
+    npm run db:inspect
+
+  Imprime as tabelas users e refresh_tokens, evidenciando que não há
+  senha nem token em texto puro — apenas hashes.
+
+================================================================================
+  8. PERGUNTAS PROVÁVEIS E RESPOSTAS
+================================================================================
+
+  "Por que dois tokens em vez de um?"
+    Porque os dois têm funções opostas. O access token precisa ser rápido
+    de validar e por isso não fica no banco — mas justamente por não ficar
+    no banco, não pode ser revogado, então precisa durar pouco. O refresh
+    token resolve o outro lado: dura 30 dias e é revogável porque está no
+    banco, mas é usado raramente, só na renovação.
+
+  "O JWT pode ser lido por qualquer pessoa. Isso não é um problema?"
+    Não, porque o JWT não serve para esconder informação — serve para
+    provar origem. O payload é apenas codificado em base64, não
+    criptografado, e é por isso que ele contém só id, papel, matrícula e
+    nome. Nada secreto. O que protege é a assinatura: alterar o papel de
+    "atendente" para "gestor" invalida a assinatura e o token é recusado.
+
+  "Por que 15 minutos e não 1 hora?"
+    É o equilíbrio entre segurança e número de renovações. Quinze minutos
+    limitam o dano de um token interceptado e geram 4 renovações por hora
+    de uso, o que é irrelevante em volume. O valor está em variável de
+    ambiente (ACCESS_TOKEN_TTL), então é ajustável sem alterar código.
+
+  "Por que SQLite e não PostgreSQL?"
+    Para esta entrega, o SQLite não exige instalar nem configurar servidor
+    de banco: o banco é um arquivo. Como todo SQL está isolado nos
+    repositories, migrar para PostgreSQL altera apenas aquela camada.
+
+  "Por que bcrypt na senha e SHA-256 no refresh token?"
+    Porque protegem coisas diferentes. Senha é curta, escolhida por
+    humano e portanto previsível: precisa de hash lento para encarecer a
+    força bruta. O refresh token tem 256 bits aleatórios — força bruta já
+    é inviável — e é verificado a cada renovação, então o hash precisa ser
+    rápido. O SHA-256 cumpre o objetivo real ali: tornar inútil um
+    eventual vazamento do banco.
+
+  "Como seria o logout se o access token não fica no banco?"
+    O logout revoga o refresh token, o que impede novas renovações. O
+    access token em circulação continua válido até o seu "exp" — no
+    máximo 15 minutos. Esse é o custo conhecido de validação sem consulta
+    ao banco. Se fosse necessário corte imediato, a solução seria uma
+    lista de revogação consultada a cada requisição, o que devolveria a
+    consulta ao banco que a arquitetura buscou eliminar.
+
+  "Isso está pronto para produção?"
+    A lógica de autenticação está. Antes de produção faltam: trocar
+    SQLite por PostgreSQL, mover o limite de tentativas para Redis (hoje
+    é em memória e vale para uma instância), HTTPS obrigatório e o
+    JWT_SECRET vindo do cofre de variáveis do provedor em vez do .env.
+
+================================================================================
+  9. PRÓXIMOS PASSOS
+================================================================================
+
+  1. Integrar o aplicativo à API: cliente HTTP, armazenamento dos tokens
+     com expo-secure-store e renovação automática ao receber TOKEN_EXPIRED.
+  2. Remover constants/auth.ts e trocar a senha do gestor, que está
+     exposta no histórico do repositório.
+  3. Migrar as trocas de plantão para o backend, movendo a função
+     conflitosDaTroca() para o servidor — hoje ela roda no dispositivo,
+     onde o próprio atendente poderia burlar o limite mensal de trocas.
+  4. Trocar SQLite por PostgreSQL e publicar a API.
+
+================================================================================
+  FIM DO DOCUMENTO
+================================================================================
